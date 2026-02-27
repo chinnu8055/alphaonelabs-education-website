@@ -2,9 +2,10 @@
 
 import json
 import logging
+from typing import Any, Dict, List, Optional
 
 import requests
-from django.http import JsonResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_POST
@@ -12,7 +13,7 @@ from django.views.decorators.http import require_POST
 logger = logging.getLogger(__name__)
 
 
-def build_virtual_lab_subjects():
+def build_virtual_lab_subjects() -> List[Dict[str, Any]]:
     """Return subject and lab metadata for virtual lab navigation and landing pages."""
     return [
         {
@@ -42,7 +43,9 @@ def build_virtual_lab_subjects():
     ]
 
 
-def render_virtual_lab_page(request, template_name, extra_context=None):
+def render_virtual_lab_page(
+    request: HttpRequest, template_name: str, extra_context: Optional[Dict[str, Any]] = None
+) -> HttpResponse:
     """Render a virtual lab template with common navigation context."""
     context = {
         "virtual_lab_subjects": build_virtual_lab_subjects(),
@@ -100,26 +103,32 @@ def physics_electrical_circuit_view(request):
 
 
 def chemistry_home(request):
+    """Render the Chemistry lab overview page."""
     return render_virtual_lab_page(request, "virtual_lab/chemistry/index.html")
 
 
 def titration_view(request):
+    """Render the Acid-Base Titration simulation page."""
     return render_virtual_lab_page(request, "virtual_lab/chemistry/titration.html")
 
 
 def reaction_rate_view(request):
+    """Render the Reaction Rate simulation page."""
     return render_virtual_lab_page(request, "virtual_lab/chemistry/reaction_rate.html")
 
 
 def solubility_view(request):
+    """Render the Solubility and Saturation simulation page."""
     return render_virtual_lab_page(request, "virtual_lab/chemistry/solubility.html")
 
 
 def precipitation_view(request):
+    """Render the Precipitation Reaction simulation page."""
     return render_virtual_lab_page(request, "virtual_lab/chemistry/precipitation.html")
 
 
 def ph_indicator_view(request):
+    """Render the pH Indicator simulation page."""
     return render_virtual_lab_page(request, "virtual_lab/chemistry/ph_indicator.html")
 
 
@@ -135,6 +144,7 @@ LANG_FILE_EXT = {
 
 
 def code_editor_view(request):
+    """Render the virtual lab code editor page."""
     return render_virtual_lab_page(request, "virtual_lab/code_editor/code_editor.html")
 
 

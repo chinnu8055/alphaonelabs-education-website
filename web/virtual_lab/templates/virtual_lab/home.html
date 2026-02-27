@@ -14,7 +14,7 @@
           {% for subject in virtual_lab_subjects %}
             {% if subject.key == "physics" %}
               <a href="{% url subject.url_name %}"
-                 class="block bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-6 shadow hover:shadow-md transition">
+                 class="block bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-6 shadow hover:shadow-md transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-300 dark:focus:ring-blue-400 dark:focus:ring-offset-gray-800">
                 <h3 class="text-2xl font-semibold text-blue-700 dark:text-blue-300 mb-2">{{ subject.label }}</h3>
                 <p class="text-blue-600 dark:text-blue-400">
                   {% blocktrans with count=subject.labs|length %}Explore {{ count }} labs{% endblocktrans %}
@@ -22,7 +22,7 @@
               </a>
             {% elif subject.key == "chemistry" %}
               <a href="{% url subject.url_name %}"
-                 class="block bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-lg p-6 shadow hover:shadow-md transition">
+                 class="block bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-lg p-6 shadow hover:shadow-md transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-300 dark:focus:ring-green-400 dark:focus:ring-offset-gray-800">
                 <h3 class="text-2xl font-semibold text-green-700 dark:text-green-300 mb-2">{{ subject.label }}</h3>
                 <p class="text-green-600 dark:text-green-400">
                   {% blocktrans with count=subject.labs|length %}Explore {{ count }} labs{% endblocktrans %}
@@ -30,7 +30,7 @@
               </a>
             {% else %}
               <a href="{% url subject.url_name %}"
-                 class="block bg-indigo-50 dark:bg-indigo-900 border border-indigo-200 dark:border-indigo-700 rounded-lg p-6 shadow hover:shadow-md transition">
+                 class="block bg-indigo-50 dark:bg-indigo-900 border border-indigo-200 dark:border-indigo-700 rounded-lg p-6 shadow hover:shadow-md transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-300 dark:focus:ring-indigo-400 dark:focus:ring-offset-gray-800">
                 <h3 class="text-2xl font-semibold text-indigo-700 dark:text-indigo-300 mb-2">{{ subject.label }}</h3>
                 <p class="text-indigo-600 dark:text-indigo-400">
                   {% blocktrans with count=subject.labs|length %}Explore {{ count }} labs{% endblocktrans %}
@@ -39,7 +39,7 @@
             {% endif %}
           {% endfor %}
           <a href="{% url 'virtual_lab:code_editor' %}"
-             class="block bg-teal-50 dark:bg-teal-900 border border-teal-200 dark:border-teal-700 rounded-lg p-6 shadow hover:shadow-md transition">
+             class="block bg-teal-50 dark:bg-teal-900 border border-teal-200 dark:border-teal-700 rounded-lg p-6 shadow hover:shadow-md transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-300 dark:focus:ring-teal-400 dark:focus:ring-offset-gray-800">
             <h3 class="text-2xl font-semibold text-teal-700 dark:text-teal-300 mb-2">{% trans "Code Editor" %}</h3>
             <p class="text-teal-600 dark:text-teal-400">{% trans "Write and run code directly from the virtual lab." %}</p>
           </a>
