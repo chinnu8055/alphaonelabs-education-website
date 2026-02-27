@@ -14,25 +14,25 @@
         <nav class="space-x-8 text-gray-700 dark:text-gray-300">
           <!-- Home Link -->
           <a href="{% url 'virtual_lab:virtual_lab_home' %}"
-             class="hover:text-indigo-600 dark:hover:text-indigo-400 transition">{% trans "Home" %}</a>
-          <!-- Physics Dropdown -->
-          <div class="relative group inline-block">
-            <button class="hover:text-indigo-600 dark:hover:text-indigo-400 transition focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              {% trans "Physics" %}
-            </button>
-            <div class="absolute left-0 mt-2 w-40 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto">
-              <a href="{% url 'virtual_lab:physics_pendulum' %}"
-                 class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900 transition">{% trans "Pendulum" %}</a>
-              <a href="{% url 'virtual_lab:physics_projectile' %}"
-                 class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-green-900 transition">{% trans "Projectile" %}</a>
-              <a href="{% url 'virtual_lab:physics_inclined' %}"
-                 class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-yellow-50 dark:hover:bg-yellow-900 transition">{% trans "Inclined Plane" %}</a>
+             class="hover:text-gray-900 dark:hover:text-white transition">{% trans "Home" %}</a>
+          {% for subject in virtual_lab_subjects %}
+            <div class="relative group inline-block">
+              <a href="{% url subject.url_name %}"
+                 class="hover:text-gray-900 dark:hover:text-white transition focus:outline-none focus:ring-2 focus:ring-gray-500">
+                {{ subject.label }}
+              </a>
+              <div class="absolute left-0 top-full pt-1 w-56 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto z-20">
+                <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg">
+                  {% for lab in subject.labs %}
+                    <a href="{% url lab.url_name %}"
+                       class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition">{{ lab.label }}</a>
+                  {% endfor %}
+                </div>
+              </div>
             </div>
-          </div>
-          <a href="{% url 'virtual_lab:chemistry_home' %}"
-             class="hover:text-indigo-600 dark:hover:text-indigo-400 transition">{% trans "Chemistry" %}</a>
+          {% endfor %}
           <a href="{% url 'virtual_lab:code_editor' %}"
-             class="hover:text-indigo-600 dark:hover:text-indigo-400 transition">{% trans "Code Editor" %}</a>
+             class="hover:text-gray-900 dark:hover:text-white transition">{% trans "Code Editor" %}</a>
         </nav>
       </div>
     </header>
