@@ -5,10 +5,12 @@
 {% load i18n %}
 
 {% block virtual_lab_content %}
-  <div class="max-w-5xl mx-auto px-6 py-8">
+  <div class="container mx-auto px-4 py-8">
     <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
       <div class="px-8 py-6">
-        <h2 class="text-4xl font-extrabold text-gray-800 dark:text-gray-100 mb-4">Welcome to the Alpha Science Lab</h2>
+        <h2 class="text-4xl font-extrabold text-gray-800 dark:text-gray-100 mb-4">
+          {% trans "Welcome to the Alpha Science Lab" %}
+        </h2>
         <p class="text-gray-600 dark:text-gray-300 mb-8">{% trans "Choose a subject to explore available virtual labs." %}</p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {% for subject in virtual_lab_subjects %}

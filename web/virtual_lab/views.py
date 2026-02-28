@@ -2,7 +2,6 @@
 
 import json
 import logging
-from typing import Any, Dict, List, Optional
 
 import requests
 from django.http import HttpRequest, HttpResponse, JsonResponse
@@ -13,7 +12,7 @@ from django.views.decorators.http import require_POST
 logger = logging.getLogger(__name__)
 
 
-def build_virtual_lab_subjects() -> List[Dict[str, Any]]:
+def build_virtual_lab_subjects() -> list[dict[str, object]]:
     """Return subject and lab metadata for virtual lab navigation and landing pages."""
     return [
         {
@@ -44,7 +43,7 @@ def build_virtual_lab_subjects() -> List[Dict[str, Any]]:
 
 
 def render_virtual_lab_page(
-    request: HttpRequest, template_name: str, extra_context: Optional[Dict[str, Any]] = None
+    request: HttpRequest, template_name: str, extra_context: dict[str, object] | None = None
 ) -> HttpResponse:
     """Render a virtual lab template with common navigation context."""
     context = {
