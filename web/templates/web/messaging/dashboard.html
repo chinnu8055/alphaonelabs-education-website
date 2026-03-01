@@ -25,8 +25,9 @@
         <div id="inbox-list" class="flex flex-col gap-2">
           {% for person in people %}
             <button type="button"
-                    class="flex items-center gap-2 px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 hover:bg-teal-200 dark:hover:bg-teal-800 transition group person-btn"
-                    data-person="{{ person.username }}">
+                    class="flex items-center gap-2 px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 hover:bg-teal-200 dark:hover:bg-teal-800 transition group"
+                    data-person-btn
+                    data-person="{{ person.username|escapejs }}">
               {% if person.avatar_url %}
                 <img src="{{ person.avatar_url }}"
                      alt="Avatar"
@@ -40,7 +41,8 @@
               {% endif %}
               <span class="font-medium">{{ person.display_name }}</span>
               {% if person.has_unread %}
-                <span class="ml-2 bg-teal-600 text-white text-xs font-semibold px-2 py-0.5 rounded dark:bg-teal-700 person-unread-badge">New</span>
+                <span class="ml-2 bg-teal-600 text-white text-xs font-semibold px-2 py-0.5 rounded dark:bg-teal-700"
+                      data-person-unread-badge>New</span>
               {% endif %}
             </button>
           {% endfor %}
@@ -128,11 +130,11 @@
       // Example data: replace with Django context in production
       const chatData = {};
       {% for person in people %}
-      chatData["{{ person.username }}"] = [
+      chatData["{{ person.username|escapejs }}"] = [
       {% for msg in person.messages %}
       {
           id: {{ msg.id }},
-          sender: "{{ msg.sender }}",
+          sender: "{{ msg.sender|escapejs }}",
           content: "{{ msg.content|escapejs }}",
           sent_at: "{{ msg.sent_at|date:'c' }}",
           starred: {{ msg.starred|yesno:'true,false' }}
@@ -161,7 +163,7 @@
           });
       }
 
-      const peopleBtns = document.querySelectorAll('.person-btn');
+      const peopleBtns = document.querySelectorAll('[data-person-btn]');
       const peoplePanel = document.getElementById('people-panel');
       const chatPanel = document.getElementById('chat-panel');
       const chatBackBtn = document.getElementById('chat-back-btn');
@@ -319,7 +321,7 @@
               });
               btn.classList.remove('bg-gray-50', 'dark:bg-gray-900', 'text-gray-800', 'dark:text-gray-200');
               btn.classList.add('bg-teal-600', 'text-white', 'border-teal-700', 'dark:bg-teal-700', 'dark:text-white');
-              const badge = btn.querySelector('.person-unread-badge');
+              const badge = btn.querySelector('[data-person-unread-badge]');
               // Mark messages as read in backend
               fetch('{% url "mark_messages_read" %}', {
                       method: 'POST',
@@ -384,9 +386,9 @@
           }
           chatHistory.innerHTML = '';
           messages.forEach(msg => {
-              const align = msg.sender === '{{ request.user.username }}' ? 'justify-end' : '';
-              const bg = msg.sender === '{{ request.user.username }}' ? 'bg-teal-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100';
-              const timeColor = msg.sender === '{{ request.user.username }}' ? 'text-teal-100' : 'text-gray-500 dark:text-gray-300';
+              const align = msg.sender === '{{ request.user.username|escapejs }}' ? 'justify-end' : '';
+              const bg = msg.sender === '{{ request.user.username|escapejs }}' ? 'bg-teal-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100';
+              const timeColor = msg.sender === '{{ request.user.username|escapejs }}' ? 'text-teal-100' : 'text-gray-500 dark:text-gray-300';
               const starColor = msg.starred ? 'text-yellow-500' : 'text-gray-400';
               const starLabel = msg.starred ? 'Unstar message' : 'Star message';
               const sentAtDate = new Date(msg.sent_at);
@@ -402,10 +404,10 @@
               const safeContent = escapeHTML(msg.content);
               const safeSentAt = escapeHTML(sentAt);
               const safeStarLabel = escapeHTML(starLabel);
-              chatHistory.innerHTML += `<div class="flex ${align} mb-2"><div class="flex items-start gap-2 max-w-[76%]"><div class="max-w-[100%] ${bg} rounded-lg px-4 py-2"><div class="break-words">${safeContent}</div><div class="text-xs mt-1 ${timeColor}">${safeSentAt}</div></div><button type="button" class="message-star-btn ${starColor} hover:text-yellow-500 self-center" data-message-id="${msg.id}" title="${safeStarLabel}" aria-label="${safeStarLabel}"><i class="fa-solid fa-star"></i></button></div></div>`;
+              chatHistory.innerHTML += `<div class="flex ${align} mb-2"><div class="flex items-start gap-2 max-w-[76%]"><div class="max-w-[100%] ${bg} rounded-lg px-4 py-2"><div class="break-words">${safeContent}</div><div class="text-xs mt-1 ${timeColor}">${safeSentAt}</div></div><button type="button" data-message-star-btn class="${starColor} hover:text-yellow-500 self-center" data-message-id="${msg.id}" title="${safeStarLabel}" aria-label="${safeStarLabel}"><i class="fa-solid fa-star"></i></button></div></div>`;
           });
 
-          document.querySelectorAll('.message-star-btn').forEach(button => {
+          document.querySelectorAll('[data-message-star-btn]').forEach(button => {
               button.addEventListener('click', function() {
                   const messageId = this.getAttribute('data-message-id');
                   const csrfToken = (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || '';
@@ -502,7 +504,7 @@
           const username = composeUsername.value.trim();
           if (username) {
               composeModal.classList.add('hidden');
-              const btn = Array.from(document.querySelectorAll('.person-btn')).find(personButton => personButton.dataset.person === username);
+              const btn = Array.from(document.querySelectorAll('[data-person-btn]')).find(personButton => personButton.dataset.person === username);
               if (btn) {
                   btn.click();
               } else {

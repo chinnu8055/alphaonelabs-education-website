@@ -22,6 +22,8 @@ from django.views.decorators.http import require_POST
 
 from .models import PeerMessage
 
+MESSAGE_RETENTION_DAYS = 7
+
 
 def sanitize_svg(svg_content: str) -> str:
     """Sanitize SVG content using a DOM-based allowlist strategy."""
@@ -172,11 +174,22 @@ def sanitize_svg(svg_content: str) -> str:
     return cleaned_svg.strip()
 
 
-# AJAX endpoint to mark messages as read for a user
 @login_required
 @require_POST
 def mark_messages_read(request):
-    data = json.loads(request.body)
+    """
+    AJAX endpoint to mark messages from a specific sender as read.
+
+    Expects JSON body with 'username' field identifying the sender.
+    Updates is_read=True and read_at timestamp for matching messages.
+
+    Returns:
+        JsonResponse with success status or error details.
+    """
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"success": False, "error": "Invalid JSON"}, status=400)
     username = data.get("username")
     if not username:
         return JsonResponse({"success": False, "error": "No username provided"}, status=400)
@@ -185,13 +198,20 @@ def mark_messages_read(request):
         sender = User.objects.get(username=username)
     except User.DoesNotExist:
         return JsonResponse({"success": False, "error": "User not found"}, status=404)
-    PeerMessage.objects.filter(sender=sender, receiver=request.user, is_read=False).update(is_read=True)
+    PeerMessage.objects.filter(sender=sender, receiver=request.user, is_read=False).update(
+        is_read=True, read_at=timezone.now()
+    )
     return JsonResponse({"success": True})
 
 
+def get_message_retention_cutoff():
+    """Return the datetime cutoff for message retention based on MESSAGE_RETENTION_DAYS."""
+    return timezone.now() - timedelta(days=MESSAGE_RETENTION_DAYS)
+
+
 def cleanup_expired_peer_messages() -> int:
-    """Delete direct messages older than 7 days and return deleted count."""
-    cutoff = timezone.now() - timedelta(days=7)
+    """Delete direct messages older than MESSAGE_RETENTION_DAYS and return deleted count."""
+    cutoff = get_message_retention_cutoff()
     expired_qs = PeerMessage.objects.filter(created_at__lt=cutoff)
     deleted_count = expired_qs.delete()[0]
     return deleted_count
@@ -229,10 +249,12 @@ def decrypt_message_with_random_key(encrypted_message: str, encrypted_random_key
 
 # --- Simple Encryption Utility Functions (if needed) ---
 def encrypt_message(message: str) -> bytes:
+    """Encrypt a message using the master Fernet key."""
     return master_fernet.encrypt(message.encode("utf-8"))
 
 
 def decrypt_message(token: bytes) -> str:
+    """Decrypt a Fernet-encrypted token using the master key."""
     return master_fernet.decrypt(token).decode("utf-8")
 
 
@@ -426,6 +448,7 @@ def download_message(request, message_id):
 @login_required
 @require_POST
 def toggle_star_message(request, message_id):
+    """Toggle the starred status of a message owned by the current user."""
     message = get_object_or_404(PeerMessage, Q(sender=request.user) | Q(receiver=request.user), id=message_id)
     message.starred = not message.starred
     message.save(update_fields=["starred"])
